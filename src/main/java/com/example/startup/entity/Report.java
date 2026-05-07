@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
 import java.time.LocalDateTime;
+import jakarta.persistence.Column;
 
 @Entity
 @Getter
@@ -21,6 +22,10 @@ public class Report {
     private Double longitude; // 경도 (위치)
 
     private String imageUrl; // 찍은 하수구 사진 URL
+    
+    @Column(length = 100)
+    private String description;
 
     private LocalDateTime createdAt = LocalDateTime.now(); // 신고된 시간
+    
 }
