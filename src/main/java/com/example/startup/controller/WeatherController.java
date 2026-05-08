@@ -7,7 +7,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 @RestController
-@CrossOrigin // 프론트엔드 호출 허용 (개발용)
+@CrossOrigin(origins = {
+	    "https://startup-frontend-rho.vercel.app",
+	    "http://localhost:3000"
+	})
 public class WeatherController {
 
     // 🌟 application.properties의 seoul.api.key 값을 자동으로 주입

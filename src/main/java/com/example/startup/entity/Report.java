@@ -28,4 +28,6 @@ public class Report {
 
     private LocalDateTime createdAt = LocalDateTime.now(); // 신고된 시간
     
+    private String loginId;
+    
 }

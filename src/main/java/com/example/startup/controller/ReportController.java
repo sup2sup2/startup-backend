@@ -65,8 +65,10 @@ public class ReportController {
         report.setLatitude(latitude);
         report.setLongitude(longitude);
         report.setImageUrl(imageUrl);
-        report.setDescription(description); 
+        report.setDescription(description);
+        report.setLoginId(loginId);
         reportRepository.save(report);
+        
 
         // 4. 포인트 적립 (회원이 확실하므로 바로 적립!)
         Member member = memberOpt.get();
