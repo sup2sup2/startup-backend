@@ -29,7 +29,15 @@ public class S3Service {
 
     // 🌟 S3에 파일 업로드 → 공개 URL 반환
     public String uploadFile(MultipartFile file) throws IOException {
-        String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+        String originalName = file.getOriginalFilename();
+        String extension = "";
+        if (originalName != null && originalName.lastIndexOf('.') >= 0) {
+            String candidate = originalName.substring(originalName.lastIndexOf('.')).toLowerCase();
+            if (candidate.matches("\\.[a-z0-9]{1,10}")) {
+                extension = candidate;
+            }
+        }
+        String fileName = UUID.randomUUID() + extension;
 
         s3Client.putObject(
                 PutObjectRequest.builder()

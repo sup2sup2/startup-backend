@@ -1,16 +1,11 @@
 package com.example.startup.controller;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 @RestController
-@CrossOrigin(origins = {
-	    "https://startup-frontend-rho.vercel.app",
-	    "http://localhost:3000"
-	})
 public class WeatherController {
 
     // 🌟 application.properties의 seoul.api.key 값을 자동으로 주입
