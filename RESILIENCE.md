@@ -19,6 +19,8 @@ Client
 
 ## 현재 무료 운영 환경의 한계
 
+운영 캐시는 Render의 무료 Key Value(Valkey, Redis 호환)를 사용합니다. 백엔드와 같은 Oregon 리전의 내부 네트워크로 연결하며, `allkeys-lru`와 비영속 모드로 실행합니다. 캐시가 재시작되어 데이터가 사라져도 원본에서 다시 채워집니다. 애플리케이션 시작 로그의 `Redis cache connection verified (PING=PONG)`으로 실제 연결을 확인합니다.
+
 현재 Aiven 무료 MySQL은 단일 노드이므로 운영 환경에서 실제 DB 이중화가 활성화된 상태는 아닙니다. 코드는 `DB_REPLICA_URL`이 있을 때 읽기를 분리하도록 준비되어 있고, 아래 Docker 구성에서 장애 전환 동작을 재현할 수 있습니다. 운영에서 Primary–Replica를 적용했다고 표현하려면 실제 Replica가 제공되는 DB 요금제나 별도 DB 인스턴스를 연결한 뒤 장애 테스트 결과를 남겨야 합니다.
 
 ## 로컬 실행
