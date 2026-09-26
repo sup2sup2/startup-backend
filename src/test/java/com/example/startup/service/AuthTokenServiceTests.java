@@ -23,8 +23,11 @@ class AuthTokenServiceTests {
     void tamperedTokenIsRejected() {
         AuthTokenService service = new AuthTokenService(SECRET, 60);
         String token = service.issueToken("reporter_1");
-        String tampered = token.substring(0, token.length() - 1)
-                + (token.endsWith("A") ? "B" : "A");
+        int signatureStart = token.lastIndexOf('.') + 1;
+        int tamperIndex = signatureStart + 3;
+        char replacement = token.charAt(tamperIndex) == 'A' ? 'B' : 'A';
+        String tampered = token.substring(0, tamperIndex)
+                + replacement + token.substring(tamperIndex + 1);
 
         assertThrows(ResponseStatusException.class,
                 () -> service.requireLoginId("Bearer " + tampered));

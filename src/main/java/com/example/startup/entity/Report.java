@@ -4,12 +4,18 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import java.time.LocalDateTime;
 import jakarta.persistence.Column;
 
 @Entity
+@Table(indexes = {
+        @Index(name = "idx_report_created_at", columnList = "created_at"),
+        @Index(name = "idx_report_login_created", columnList = "login_id, created_at")
+})
 @Getter
 @Setter
 public class Report {
@@ -26,8 +32,10 @@ public class Report {
     @Column(length = 100)
     private String description;
 
+    @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now(); // 신고된 시간
     
+    @Column(name = "login_id")
     private String loginId;
     
 }

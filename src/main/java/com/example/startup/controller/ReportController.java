@@ -5,6 +5,8 @@ import com.example.startup.entity.Report;
 import com.example.startup.repository.MemberRepository;
 import com.example.startup.repository.ReportRepository;
 import com.example.startup.service.AuthTokenService;
+import com.example.startup.service.ReportReadService;
+import com.example.startup.service.ReportReadService.ReportPage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,18 +31,34 @@ public class ReportController {
     private final MemberRepository memberRepository;
     private final S3Service s3Service;
     private final AuthTokenService authTokenService;
+    private final ReportReadService reportReadService;
 
     public ReportController(ReportRepository reportRepository, MemberRepository memberRepository,
-            S3Service s3Service, AuthTokenService authTokenService) {
+            S3Service s3Service, AuthTokenService authTokenService,
+            ReportReadService reportReadService) {
         this.reportRepository = reportRepository;
         this.memberRepository = memberRepository;
         this.s3Service = s3Service;
         this.authTokenService = authTokenService;
+        this.reportReadService = reportReadService;
     }
 
     @GetMapping("/api/reports")
-    public List<ReportResponse> getAllReports() {
-        return reportRepository.findAll().stream().map(ReportResponse::from).toList();
+    public List<ReportResponse> getAllReports(
+            @RequestParam(defaultValue = "100") int limit) {
+        int safeLimit = Math.max(1, Math.min(limit, 500));
+        return reportReadService.findLatest(safeLimit).stream()
+                .map(item -> new ReportResponse(item.id(), item.latitude(), item.longitude(),
+                        item.imageUrl(), item.description()))
+                .toList();
+    }
+
+    @GetMapping("/api/reports/page")
+    public ReportPage getReportPage(
+            @RequestParam(required = false) Long beforeId,
+            @RequestParam(defaultValue = "50") int size) {
+        int safeSize = Math.max(1, Math.min(size, 100));
+        return reportReadService.findPage(beforeId, safeSize);
     }
 
     @GetMapping("/api/reports/mine")

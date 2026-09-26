@@ -12,6 +12,14 @@
 - `CORS_ALLOWED_ORIGINS`: 허용할 프론트엔드 주소. 여러 개면 쉼표로 구분
 - `JPA_DDL_AUTO`: 운영 환경에서는 `validate` 권장
 
+부하 분산 기능은 다음 환경변수를 설정할 때 활성화됩니다.
+
+- `REDIS_ENABLED=true`, `REDIS_HOST`, `REDIS_PORT`, `REDIS_USERNAME`, `REDIS_PASSWORD`, `REDIS_SSL_ENABLED`
+- `DB_REPLICA_URL`, `DB_REPLICA_USERNAME`, `DB_REPLICA_PASSWORD`: 읽기 전용 MySQL 사용자 권장
+- `DB_POOL_MAX_SIZE`, `DB_REPLICA_POOL_MAX_SIZE`: 무료 서버에서는 합계가 DB 연결 한도를 넘지 않도록 설정
+
+Redis 또는 Replica 환경변수가 없으면 기존처럼 단일 MySQL만 사용합니다. Redis 장애 시 원본 조회로 전환하고 Replica 장애 시 Primary에서 조회를 한 번 재시도합니다.
+
 이미 Git에 포함됐던 DB 비밀번호와 서울시 API 키는 배포 전에 새 값으로 교체합니다.
 
 프론트엔드에는 `NEXT_PUBLIC_API_URL`과 `NEXT_PUBLIC_KAKAO_MAP_KEY`를 설정합니다.
