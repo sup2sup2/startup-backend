@@ -23,27 +23,32 @@ public class RiskService {
     private final CacheStore cacheStore;
     private final ObjectMapper objectMapper;
     private final Duration cacheTtl;
+    private final boolean cacheEnabled;
 
     public RiskService(RainfallService rainfallService, ReportReadService reportReadService,
             CacheStore cacheStore, ObjectMapper objectMapper,
-            @Value("${app.cache.risk-ttl}") Duration cacheTtl) {
+            @Value("${app.cache.risk-ttl}") Duration cacheTtl,
+            @Value("${app.cache.risk-enabled:true}") boolean cacheEnabled) {
         this.rainfallService = rainfallService;
         this.reportReadService = reportReadService;
         this.cacheStore = cacheStore;
         this.objectMapper = objectMapper;
         this.cacheTtl = cacheTtl;
+        this.cacheEnabled = cacheEnabled;
     }
 
     public RiskResponse getRisk(String district) {
         String normalizedDistrict = normalizeDistrict(district);
         String cacheKey = "risk:v1:" + normalizedDistrict;
 
-        var cached = cacheStore.get(cacheKey);
-        if (cached.isPresent()) {
-            try {
-                return objectMapper.readValue(cached.get(), RiskResponse.class);
-            } catch (Exception exception) {
-                cacheStore.evict(cacheKey);
+        if (cacheEnabled) {
+            var cached = cacheStore.get(cacheKey);
+            if (cached.isPresent()) {
+                try {
+                    return objectMapper.readValue(cached.get(), RiskResponse.class);
+                } catch (Exception exception) {
+                    cacheStore.evict(cacheKey);
+                }
             }
         }
 
@@ -64,10 +69,12 @@ public class RiskService {
                 level,
                 Instant.now(),
                 "최근 10분 강우량과 서울시 전체 최근 신고 수를 조합한 서비스용 지표");
-        try {
-            cacheStore.put(cacheKey, objectMapper.writeValueAsString(response), cacheTtl);
-        } catch (Exception ignored) {
-            // The response is still useful even when serialization for cache fails.
+        if (cacheEnabled) {
+            try {
+                cacheStore.put(cacheKey, objectMapper.writeValueAsString(response), cacheTtl);
+            } catch (Exception ignored) {
+                // The response is still useful even when serialization for cache fails.
+            }
         }
         return response;
     }

@@ -15,6 +15,7 @@ Client
 - `/api/reports/page?size=50&beforeId=...`는 `id` 커서를 사용합니다. 큰 OFFSET 조회를 피합니다.
 - `/api/weather/rainfall`는 서울시 원본 응답을 Redis에 120초 보관합니다. Redis 장애 때 서울시 API를 직접 호출하고, 서울시 API까지 실패하면 최근 15분 이내 메모리 값을 반환합니다.
 - `/api/risk?district=강남구`는 20초 캐시를 사용합니다. 점수는 공식 재난 기준이 아니라 최근 강우량과 서울시 전체 신고 수를 조합한 서비스 내부 지표입니다.
+- `RISK_CACHE_ENABLED=false`로 위험도 응답 캐시만 우회할 수 있습니다. 강우 공공데이터 캐시는 유지되므로 같은 시나리오에서 위험도 캐시의 효과를 안전하게 비교할 수 있습니다.
 - Replica 조회가 실패하면 같은 쿼리를 Primary에서 한 번 재시도합니다. 쓰기는 항상 Primary에서 수행합니다.
 
 ## 현재 무료 운영 환경의 한계
